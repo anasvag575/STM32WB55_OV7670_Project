@@ -1,6 +1,6 @@
 # STM32WB55 MCU project
 
-The goal of this project is to implement a sensor MCU-based network, where the MCU collects and then sends the data via Radio to a processing system (Cloud or Embedded system).
+The goal of this project is to implement a sensor MCU-based network, where the MCU collects data from the nodes (in our case sensors/camera).
 
 <p align="center">
   <img src="Doc/Images/pic1.png" width="600">
@@ -8,27 +8,23 @@ The goal of this project is to implement a sensor MCU-based network, where the M
 
 ## Hardware
   - MCU -> STM32WB55xx based MCU (Nucleo 68 Board)
-  - Radio - Onboard radio transceiver (MAC 802.15.4)
   - Camera -> OV7670 (I2C and Parallel Data)
   - Temperature sensor -> KY028 (Serial)
   - Vibration/Tilt sensors -> KY020 / KY002 (Serial)
   - Light sensor -> KY018 (Serial)
 
 ## Summary
-In this folder we have all the apps that implement one part of the project. So for every app we have the following:
-  - MCU_Base_App has the non-RF implementation of the project where the drivers for the sensors and the camera are implemented
-  - MAC_802_15_4_RFD_App containts the implementation of the Transmitter part of the RF(RFD node)
-  - MAC_802_15_4_FFD_App containts the implementation of the Receiver part of the RF(FFD node)
-
 So for the MCU_Base_App a diagram of operation:
 <p align="center">
   <img src="Doc/Images/pic3.png" width="600">
 </p>
 
-While for the RFD (client) and FFD (server) apps we have:
-<p align="center">
-  <img src="Doc/Images/pic2.png" width="600">
-</p>
+So, all in all:
+ - MCU can collect and store a frame from OV7670 camera module
+ - Sample the GPIO pins for the sensors values (Analog/Digital)
+ - Perform a routine afterwards based on the data (That is left up to the user)
+ 
+ **/MCU_Base_App folder** has the STM32IDE workspace folder (can be ported directly)
  
 #### MCU GPIOs - Sensors/Camera Pins
 
@@ -71,36 +67,9 @@ Every .c file (of the above) has its corresponding header file that has sets of 
 - For the **Drivers/0V7670.h** , user can change the default values chosen for every camera register, as well as change key parameters of the camera itself
 
 All of the logic is implemented in **Core/main.c** file
-### MAC_802_15_4_RFD_App
-Has all of the above, including RF functionality which is taken from ST's RF examples, namely:
-- **app_rfd_mac_802_15_4.c** contains the main utilities used to use the RF (in the **/App** folder)
-- All the other drivers are left inside **/Core/Src** folder
-
-Generally small changes have been made in order for the main implementation to be usable inside ST's example project, some of those are:
-- **HW_UART_Transmit()** function call instead of **HAL_UART_Transmit()** usage
-- Minor additions to the clock initialization
-- Added EXTI interrupts for push-buttons
-- Changes in the **APP_RFD_MAC_802_15_4_SendData()** function call (Reads in binary format)
-
-All of the logic is implemented in **Core/Src/main.c** file.
-
-### MAC_802_15_4_FFD_App
-For the receiver part we made changes to:
-- Clock initialization (same with RFD app)
-- Receive data callback works differently (checks for sensor/camera packets and removed XOR checking)
-- Added only the **transfer_UART_frame()** routine from **OV7670.c** so we can transfer the frame after we receive it via RF
-
-All of the logic is implemented in App/app_rfd_mac_802_15_4_process.c .
 
 ### ST App/Project examples
 [STM32WB firmware] -> The link is the ST's firmware driver for STM32WB55xx based boards.
-
-Our RF implementation is based on the MAC 802.15.4 applications made by ST. The original RFD and FFD apps transmitted a simple message from one to another.
-
-MCU_Base_App is written completely by us (only the initial code was generated with STM32CubeMX).
-
-In order to see the original work (RFD/FFD Apps) press this [[link]].
-
 
 ## Install
 Tools that are needed for the installation or were used to create it:
