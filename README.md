@@ -1,10 +1,5 @@
 # STM32WB55 MCU project
-
 The goal of this project is to implement a sensor MCU-based network, where the MCU collects data from the nodes (in our case sensors/camera).
-
-<p align="center">
-  <img src="Doc/Images/pic1.png" width="600">
-</p>
 
 ## Hardware
   - MCU -> STM32WB55xx based MCU (Nucleo 68 Board)
